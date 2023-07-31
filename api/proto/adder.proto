@@ -1,0 +1,23 @@
+// ./api/proto/adder.proto
+
+syntax = "proto3"; // use proto file v3
+
+package api; // name of package
+
+option go_package = "github.com/nayan9229/goGrpc;api";
+
+// Define service Adder
+service Adder {
+    rpc Add (AddRequest) returns (AddResponse) {}
+}
+
+// Define service methods
+
+message AddRequest {
+    int32 x = 1; // Unique ID number for X
+    int32 y = 2; // Unique ID number for Y
+}
+
+message AddResponse {
+    int32 result = 1; // Unique ID number for result
+}
