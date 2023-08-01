@@ -7,7 +7,9 @@ import (
 )
 
 // GRPCServer struct
-type GRPCServer struct{}
+type GRPCServer struct {
+	api.UnimplementedAdderServer
+}
 
 // Add method for calculate X + Y
 func (s *GRPCServer) Add(ctx context.Context, req *api.AddRequest) (*api.AddResponse, error) {
