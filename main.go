@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net"
+	"time"
 
 	"github.com/nayan9229/goGrpc/api/proto"
 	"github.com/nayan9229/goGrpc/pkg/adder"
@@ -14,8 +16,31 @@ func main() {
 	s := grpc.NewServer()
 	srv := &adder.GRPCServer{}
 
+	// Client function which will request to server every 5 sec and print the result
+	go func() {
+		var conn *grpc.ClientConn
+		conn, err := grpc.Dial(":8080", grpc.WithInsecure())
+		if err != nil {
+			log.Fatalf("did not connect: %s", err)
+		}
+		defer conn.Close()
+		ac := api.NewAdderClient(conn)
+		count := int32(0)
+		for {
+			time.Sleep(5 * time.Second)
+			response, err := ac.Add(context.Background(), &api.AddRequest{
+				X: 10 * count,
+				Y: 20 * count,
+			})
+			count++
+			if err != nil {
+				log.Fatalf("Error when calling SayHello: %s", err)
+			}
+			log.Printf("Response from server: %d", response.Result)
+		}
+	}()
+
 	// Register gRPC server
-	// api.RegisterAdderServer(s, srv)
 	api.RegisterAdderServer(s, srv)
 
 	// Listen on port 8080
